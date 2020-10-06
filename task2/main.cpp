@@ -57,15 +57,15 @@ struct Printer {
         return *this;
     }
 
-    template<int Pos, template<typename> class ContainerT, typename...Args>
-    void tuple_format(const ContainerT<Args...>& v) {
+    template<int Pos, typename...Args>
+    void tuple_format(const std::tuple<Args...>& v) {
         if constexpr (Pos >= sizeof...(Args)) {
             ss.seekp(-2, std::stringstream::cur);
             return;
         } else {
             format(std::get<Pos>(v));
             ss << ", ";
-            tuple_format<Pos + 1, ContainerT, Args...>(v);
+            tuple_format<Pos + 1>(v);
         }
     }
 private:
