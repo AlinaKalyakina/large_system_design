@@ -25,29 +25,21 @@ struct Printer {
         return *this;
     }
 
-    template<template<typename> class ContainerT, typename ValueT>
-    Printer& format(const ContainerT<ValueT>& v) {
-        if constexpr (std::is_same<ContainerT<ValueT>, std::string>::value) {
-            ss << v;
-            return *this;
-        }
-        if constexpr (std::is_same<ContainerT<ValueT>, std::vector<ValueT>>::value ) {
-            ss << "[ ";
-        } else {
-            ss << "( ";
-        }
-        for (auto& x : v ) {
-            format(x);
-            ss << ", ";
-        }
-        ss.seekp(-2, std::stringstream::cur);
-        if constexpr (std::is_same<ContainerT<ValueT>, std::vector<ValueT>>::value ) {
-            ss << " ]";
-        } else {
-            ss << " )";
-        }
+    template<typename T>
+    Printer& format(const std::vector<T>& v) {
+        ss << "[ ";
+        format_container(v);
+        ss << " ]";
         return *this;
     }
+
+    template<typename T>
+    Printer& format(const std::set<T>& v) {
+        ss << "{ ";
+        format_container(v);
+        ss << " }";
+    }
+
 
     template <typename...Args>
     Printer& format(const std::tuple<Args...>& v) {
@@ -55,6 +47,17 @@ struct Printer {
         tuple_format<0>(v);
         ss << " )";
         return *this;
+    }
+private:
+    std::stringstream ss;
+
+    template<template<typename> class ContainerT, typename ValueT>
+    void format_container(const ContainerT<ValueT>& v) {
+        for (auto&& x : v ) {
+            format(x);
+            ss << ", ";
+        }
+        ss.seekp(-2, std::stringstream::cur);
     }
 
     template<int Pos, typename...Args>
@@ -68,8 +71,6 @@ struct Printer {
             tuple_format<Pos + 1>(v);
         }
     }
-private:
-    std::stringstream ss;
 };
 
 template<typename T>
