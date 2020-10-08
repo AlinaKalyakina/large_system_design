@@ -51,8 +51,8 @@ struct Printer {
 private:
     std::stringstream ss;
 
-    template<template<typename> class ContainerT, typename ValueT>
-    void format_container(const ContainerT<ValueT>& v) {
+    template<template<typename ValueT, typename ...Args> class ContainerT, typename ValueT, typename ...Args>
+    void format_container(const ContainerT<ValueT, Args...>& v) {
         for (auto&& x : v ) {
             format(x);
             ss << ", ";
