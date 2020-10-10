@@ -27,17 +27,14 @@ struct Printer {
 
     template<typename T>
     Printer& format(const std::vector<T>& v) {
-        ss << "[ ";
-        format_container(v);
-        ss << " ]";
+        format_container(v, "[ ", " ]");
         return *this;
     }
 
     template<typename T>
     Printer& format(const std::set<T>& v) {
-        ss << "{ ";
-        format_container(v);
-        ss << " }";
+        format_container(v, "{ ", " }");
+        return *this;
     }
 
 
@@ -51,12 +48,14 @@ struct Printer {
 private:
     std::stringstream ss;
 
-    template<template<typename ValueT, typename ...Args> class ContainerT, typename ValueT, typename ...Args>
-    void format_container(const ContainerT<ValueT, Args...>& v) {
+    template<template<typename ...Args> class ContainerT,typename ...Args>
+    void format_container(const ContainerT<Args...>& v, const std::string& begin, const std::string& end) {
+        ss << begin;
         for (auto&& x : v ) {
             format(x);
             ss << ", ";
         }
+        ss << end;
         ss.seekp(-2, std::stringstream::cur);
     }
 
