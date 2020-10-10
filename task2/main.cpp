@@ -37,7 +37,6 @@ struct Printer {
         return *this;
     }
 
-
     template <typename...Args>
     Printer& format(const std::tuple<Args...>& v) {
         ss << "( ";
@@ -55,8 +54,8 @@ private:
             format(x);
             ss << ", ";
         }
-        ss << end;
         ss.seekp(-2, std::stringstream::cur);
+        ss << end;
     }
 
     template<int Pos, typename...Args>
